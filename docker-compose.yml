@@ -21,5 +21,19 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
 
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver-microservices
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=fiapUser1234
+    ports:
+      - "1434:1433"
+    restart: unless-stopped
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+
 volumes:
   grafana-data:
+  sqlserver-data:  
