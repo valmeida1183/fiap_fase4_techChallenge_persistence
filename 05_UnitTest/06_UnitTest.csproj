@@ -20,9 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\02_Application\02_Application.csproj" />
-    <ProjectReference Include="..\03_Core\03_Core.csproj" />
-    <ProjectReference Include="..\04_Infraestructure\04_Infraestructure.csproj" />
+    <ProjectReference Include="..\02_Application\03_Application.csproj" />
+    <ProjectReference Include="..\03_Core\04_Core.csproj" />
+    <ProjectReference Include="..\04_Infraestructure\05_Infraestructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

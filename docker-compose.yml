@@ -33,7 +33,24 @@ services:
     volumes:
       - sqlserver-data:/var/opt/mssql
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq-microservices
+    ports:
+    # Port for the AMQP protocol (for your application to connect)
+      - "5672:5672"
+    # Port for the Management UI (for you to see queues/messages)
+      - "15672:15672"
+    volumes:
+    # This line ensures that all of RabbitMQ's data is saved to the host
+      - rabbitmq-data:/var/lib/rabbitmq/
+    # You can set a default user and password
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    restart: unless-stopped   
 
 volumes:
   grafana-data:
-  sqlserver-data:  
+  sqlserver-data:
+  rabbitmq-data:

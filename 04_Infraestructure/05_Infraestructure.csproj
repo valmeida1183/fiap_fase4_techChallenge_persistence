@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\03_Core\03_Core.csproj" />
+    <ProjectReference Include="..\03_Core\04_Core.csproj" />
   </ItemGroup>
 
 </Project>
