@@ -1,7 +1,7 @@
-﻿using Consumer.Message.Interface;
+﻿using Core.Message.Interface;
 using Core.Entity;
 
-namespace Consumer.Message.Command;
+namespace Core.Message.Command;
 public record CreateContactCommand(string Name, string Phone, string Email, int DddId)
 {
     public static implicit operator Contact(CreateContactCommand command) 

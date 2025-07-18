@@ -13,15 +13,21 @@ public static class ConsumerConfigurationExtension
     public static IServiceCollection ConfigureMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
         var host = configuration.GetSection("MassTransit:Host").Value;
+        var queue = configuration.GetSection("MassTransit:Queue").Value;
         var user = configuration.GetSection("MassTransit:User").Value;
         var password = configuration.GetSection("MassTransit:Password").Value;
 
-        if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(user) || string.IsNullOrEmpty(password))
+        if (string.IsNullOrEmpty(host) ||
+            string.IsNullOrEmpty(queue) ||
+            string.IsNullOrEmpty(user) || 
+            string.IsNullOrEmpty(password))
             throw new Exception("Missing environment variables to configure MassTransit");
 
         services.AddMassTransit(x =>
         {
             x.AddConsumer<CreateContactConsumer>();
+            x.AddConsumer<EditContactConsumer>();
+            x.AddConsumer<DeleteContactConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -31,7 +37,14 @@ public static class ConsumerConfigurationExtension
                     h.Password(password);
                 });
 
-                cfg.ConfigureEndpoints(context);
+                cfg.ReceiveEndpoint(queue, e =>
+                {
+                    e.ConfigureConsumer<CreateContactConsumer>(context);
+                    e.ConfigureConsumer<EditContactConsumer>(context);
+                    e.ConfigureConsumer<DeleteContactConsumer>(context);
+                });
+
+                //cfg.ConfigureEndpoints(context);
             });
         });
 
