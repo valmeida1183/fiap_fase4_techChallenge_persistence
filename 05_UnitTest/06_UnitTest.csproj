@@ -23,6 +23,7 @@
     <ProjectReference Include="..\02_Application\03_Application.csproj" />
     <ProjectReference Include="..\03_Core\04_Core.csproj" />
     <ProjectReference Include="..\04_Infraestructure\05_Infraestructure.csproj" />
+    <ProjectReference Include="..\07_Worker\02_Consumer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

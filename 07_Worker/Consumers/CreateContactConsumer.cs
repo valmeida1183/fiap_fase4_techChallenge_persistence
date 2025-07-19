@@ -35,7 +35,7 @@ public class CreateContactConsumer : IConsumer<CreateContactCommand>
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "01P05 - Error on creating Contact: {Name}", command.Name);
+            _logger.LogError(ex, "01P05 - Error on creating Contact: {Name}", command.Name);            
         }
     }
 }

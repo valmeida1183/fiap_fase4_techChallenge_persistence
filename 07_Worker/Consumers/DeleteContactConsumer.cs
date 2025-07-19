@@ -37,7 +37,7 @@ public class DeleteContactConsumer : IConsumer<DeleteContactCommand>
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "01P05 - Error on Deleting Contact: {Id}", command.Id);
+            _logger.LogError(ex, "01P05 - Error on deleting Contact: {Id}", command.Id);
         }
     }
 }

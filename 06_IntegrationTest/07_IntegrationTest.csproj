@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -12,16 +12,19 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="MassTransit.TestFramework" Version="8.5.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="8.0.11" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="xunit" Version="2.5.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\02_Application\02_Application.csproj" />
-    <ProjectReference Include="..\04_Infraestructure\04_Infraestructure.csproj" />
+    <ProjectReference Include="..\02_Application\03_Application.csproj" />
+    <ProjectReference Include="..\04_Infraestructure\05_Infraestructure.csproj" />
+    <ProjectReference Include="..\07_Worker\02_Consumer.csproj" />
   </ItemGroup>
 
   <ItemGroup>
