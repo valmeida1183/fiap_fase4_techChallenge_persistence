@@ -21,5 +21,106 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
 
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver-microservices
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SQL_SERVER_PASSWORD}
+    ports:
+      - "1434:1433"
+    restart: unless-stopped
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    # Healthcheck to ensure SQL Server is ready before other services start
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/1433"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq-microservices
+    ports:
+    # Port for the AMQP protocol (for your application to connect)
+      - "5672:5672"
+    # Port for the Management UI (for you to see queues/messages)
+      - "15672:15672"
+    volumes:
+    # This line ensures that all of RabbitMQ's data is saved to the host
+      - rabbitmq-data:/var/lib/rabbitmq/
+    # You can set a default user and password
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    restart: unless-stopped
+
+  client-api:
+    image: vinicius1183/client-api:v1.0.1
+    container_name: client-api-microservice
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      # Persistence API URL: Use the service name 'persistence-api' for communication
+      - PersistanceApiUrls__http=http://persistence-api:8080
+      # RabbitMQ Configuration: Use the service name 'rabbitmq' for communication
+      - MassTransit__Host=rabbitmq
+      - MassTransit__Queue=${RABBITMQ_QUEUE_NAME}
+      - MassTransit__User=${RABBITMQ_USER}
+      - MassTransit__Password=${RABBITMQ_PASSWORD}
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8082;
+    depends_on:
+      persistence-api:
+        condition: service_started # Client API needs persistence-api to be running
+      rabbitmq:
+        condition: service_started # Client API needs rabbitmq to be running
+   
+  persistence-api:
+    image: vinicius1183/persistance-api:v1.0.1
+    container_name: persistence-api-microservice
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # This passes the connection string from the .env file into the container
+      # The key "ConnectionStrings__DefaultConnection" maps to the "DefaultConnection" section in appsettings.json
+      - ConnectionStrings__DefaultConnection=${PERSISTENCE_API_CONNECTION_STRING}
+      # ASP.NET Core environment and URLs configuration
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080;
+    depends_on:
+      # This ensures the API only starts after the database is fully healthy
+      sqlserver:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+  
+  consumer:
+    image: vinicius1183/consumer-worker:v1.0.0 
+    container_name: consumer-microservice
+    restart: unless-stopped
+    environment:
+      # Database Connection String for the Consumer
+      # Use the service name 'sqlserver' for the host
+      - ConnectionStrings__DefaultConnection=${PERSISTENCE_API_CONNECTION_STRING}
+      # RabbitMQ Configuration for the Consumer
+      # Use the service name 'rabbitmq' for the host
+      - MassTransit__Host=rabbitmq
+      - MassTransit__Queue=${RABBITMQ_QUEUE_NAME}
+      - MassTransit__User=${RABBITMQ_USER}
+      - MassTransit__Password=${RABBITMQ_PASSWORD}
+      - ASPNETCORE_ENVIRONMENT=Production # Set the environment
+    depends_on:
+      sqlserver:
+        condition: service_healthy # Ensure SQL Server is healthy
+      rabbitmq:
+        condition: service_started # Ensure RabbitMQ is started
+
 volumes:
   grafana-data:
+  sqlserver-data:
+  rabbitmq-data:
