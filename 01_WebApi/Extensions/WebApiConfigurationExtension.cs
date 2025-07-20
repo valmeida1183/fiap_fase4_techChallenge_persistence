@@ -42,11 +42,20 @@ public static class WebApiConfigurationExtension
 
         builder.Services.AddScoped<IContactRepository, ContactRepository>();
         builder.Services.AddScoped<IDirectDistanceDialingRepository, DirectDistanceDialingRepository>();
-    }    
+    }
 
     public static void ConfigureSwagger(this WebApplicationBuilder builder)
     {
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+    }
+
+    public static void RunMigrationsAtStartup(this WebApplication app)
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+            dbContext.Database.Migrate();
+        }        
     }
 }

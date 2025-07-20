@@ -22,10 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\02_Application\03_Application.csproj" />
-    <ProjectReference Include="..\04_Infraestructure\05_Infraestructure.csproj" />
-    <ProjectReference Include="..\07_Worker\02_Consumer.csproj" />
-  </ItemGroup>
+    <ProjectReference Include="..\02_Consumer\02_Consumer.csproj" />
+    <ProjectReference Include="..\03_Application\03_Application.csproj" />
+    <ProjectReference Include="..\04_Core\04_Core.csproj" />
+    <ProjectReference Include="..\05_Infraestructure\05_Infraestructure.csproj" />
+  </ItemGroup>  
 
   <ItemGroup>
     <Using Include="Xunit" />
