@@ -1,3 +1,6 @@
+# docker build -f 01_WebApi/Dockerfile -t vinicius1183/persistance-api:v1.0.1 .
+# docker push vinicius1183/persistance-api:v1.0.1
+
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app

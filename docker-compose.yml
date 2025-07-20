@@ -56,13 +56,34 @@ services:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
     restart: unless-stopped
+
+  client-api:
+    image: vinicius1183/client-api:v1.0.1
+    container_name: client-api-microservice
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      # Persistence API URL: Use the service name 'persistence-api' for communication
+      - PersistanceApiUrls__http=http://persistence-api:8080
+      # RabbitMQ Configuration: Use the service name 'rabbitmq' for communication
+      - MassTransit__Host=rabbitmq
+      - MassTransit__Queue=${RABBITMQ_QUEUE_NAME}
+      - MassTransit__User=${RABBITMQ_USER}
+      - MassTransit__Password=${RABBITMQ_PASSWORD}
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8082;
+    depends_on:
+      persistence-api:
+        condition: service_started # Client API needs persistence-api to be running
+      rabbitmq:
+        condition: service_started # Client API needs rabbitmq to be running
    
   persistence-api:
     image: vinicius1183/persistance-api:v1.0.1
     container_name: persistence-api-microservice
     restart: unless-stopped
     ports:
-      # Map container ports to host ports (e.g., http: 7175->8080, https: 7176->8081)
       - "8080:8080"
     environment:
       # This passes the connection string from the .env file into the container
@@ -77,6 +98,27 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_started
+  
+  consumer:
+    image: vinicius1183/consumer-worker:v1.0.0 
+    container_name: consumer-microservice
+    restart: unless-stopped
+    environment:
+      # Database Connection String for the Consumer
+      # Use the service name 'sqlserver' for the host
+      - ConnectionStrings__DefaultConnection=${PERSISTENCE_API_CONNECTION_STRING}
+      # RabbitMQ Configuration for the Consumer
+      # Use the service name 'rabbitmq' for the host
+      - MassTransit__Host=rabbitmq
+      - MassTransit__Queue=${RABBITMQ_QUEUE_NAME}
+      - MassTransit__User=${RABBITMQ_USER}
+      - MassTransit__Password=${RABBITMQ_PASSWORD}
+      - ASPNETCORE_ENVIRONMENT=Production # Set the environment
+    depends_on:
+      sqlserver:
+        condition: service_healthy # Ensure SQL Server is healthy
+      rabbitmq:
+        condition: service_started # Ensure RabbitMQ is started
 
 volumes:
   grafana-data:
