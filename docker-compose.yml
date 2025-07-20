@@ -26,7 +26,7 @@ services:
     container_name: sqlserver-microservices
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=fiapUser1234
+      - SA_PASSWORD=${SQL_SERVER_PASSWORD}
     ports:
       - "1434:1433"
     restart: unless-stopped
@@ -53,8 +53,8 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq/
     # You can set a default user and password
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
     restart: unless-stopped
 
   client-api:
