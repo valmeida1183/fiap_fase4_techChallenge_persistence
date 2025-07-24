@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer
+  namespace: fase4-tech-challenge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+        - name: consumer
+          image: vinicius1183/consumer-worker:v1.0.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: MassTransit__Host
+              valueFrom:
+                configMapKeyRef:
+                  name: environment-config
+                  key: RABBITMQ_HOST
+            - name: MassTransit__Queue
+              valueFrom:
+                configMapKeyRef:
+                  name: global-config
+                  key: RABBITMQ_QUEUE
+            - name: MassTransit__User
+              valueFrom:
+                configMapKeyRef:
+                  name: global-config
+                  key: RABBITMQ_USER
+            - name: MassTransit__Password
+              valueFrom:
+                configMapKeyRef:
+                  name: global-config
+                  key: RABBITMQ_PASSWORD
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: environment-config
+                  key: CONNECTION_STRING_TEMPLATE
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
