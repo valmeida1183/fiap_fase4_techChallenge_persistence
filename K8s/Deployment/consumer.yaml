@@ -16,8 +16,6 @@ spec:
       containers:
         - name: consumer
           image: vinicius1183/consumer-worker:v1.0.0
-          ports:
-            - containerPort: 8080
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: "Production"
@@ -29,23 +27,23 @@ spec:
             - name: MassTransit__Queue
               valueFrom:
                 configMapKeyRef:
-                  name: global-config
-                  key: RABBITMQ_QUEUE
+                  name: environment-config
+                  key: RABBITMQ_QUEUE_NAME
             - name: MassTransit__User
               valueFrom:
                 configMapKeyRef:
-                  name: global-config
+                  name: environment-config
                   key: RABBITMQ_USER
             - name: MassTransit__Password
               valueFrom:
                 configMapKeyRef:
-                  name: global-config
+                  name: environment-config
                   key: RABBITMQ_PASSWORD
             - name: ConnectionStrings__DefaultConnection
               valueFrom:
-                configMapKeyRef:
-                  name: environment-config
-                  key: CONNECTION_STRING_TEMPLATE
+                secretKeyRef:
+                  name: sqlserver-secret
+                  key: CONNECTION_STRING
           resources:
             requests:
               memory: "256Mi"

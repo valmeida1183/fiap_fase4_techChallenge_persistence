@@ -12,46 +12,46 @@ spec:
     metadata:
       labels:
         app: persistence-api
-  spec:
-    containers:
-      - name: persistence-api
-        image: vinicius1183/persistance-api:v1.0.1
-        ports:
-          - containerPort: 8080
-        env:
-          - name: ASPNETCORE_ENVIRONMENT
-            value: "Production"
-          - name: ASPNETCORE_URLS
-            value: "http://+:8080"
-          - name: MassTransit__Host
-            valueFrom:
-              configMapKeyRef:
-                name: environment-config
-                key: RABBITMQ_HOST
-          - name: MassTransit__Queue
-            valueFrom:
-              configMapKeyRef:
-                name: environment-config
-                key: RABBITMQ_QUEUE
-          - name: MassTransit__User
-            valueFrom:
-              configMapKeyRef:
-                name: environment-config
-                key: RABBITMQ_USER
-          - name: MassTransit__Password
-            valueFrom:
-              configMapKeyRef:
-                name: environment-config
-                key: RABBITMQ_PASSWORD
-          - name: ConnectionStrings__DefaultConnection
-            valueFrom:
-              configMapKeyRef:
-                name: environment-config
-                key: CONNECTION_STRING_TEMPLATE
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
+    spec:
+      containers:
+        - name: persistence-api
+          image: vinicius1183/persistance-api:v1.0.1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: ASPNETCORE_URLS
+              value: "http://+:8080"
+            - name: MassTransit__Host
+              valueFrom:
+                configMapKeyRef:
+                  name: environment-config
+                  key: RABBITMQ_HOST
+            - name: MassTransit__Queue
+              valueFrom:
+                configMapKeyRef:
+                  name: environment-config
+                  key: RABBITMQ_QUEUE_NAME
+            - name: MassTransit__User
+              valueFrom:
+                configMapKeyRef:
+                  name: environment-config
+                  key: RABBITMQ_USER
+            - name: MassTransit__Password
+              valueFrom:
+                configMapKeyRef:
+                  name: environment-config
+                  key: RABBITMQ_PASSWORD
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: sqlserver-secret
+                  key: CONNECTION_STRING
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"

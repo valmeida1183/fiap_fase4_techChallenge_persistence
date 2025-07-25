@@ -32,7 +32,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: environment-config
-                  key: RABBITMQ_QUEUE
+                  key: RABBITMQ_QUEUE_NAME
             - name: MassTransit__User
               valueFrom:
                 configMapKeyRef:

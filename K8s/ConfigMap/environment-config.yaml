@@ -13,5 +13,4 @@ data:
   # Client API
   PERSISTENCE_API_URL: "http://persistence-api-service:8080"
 
-  # Persistence API
-  CONNECTION_STRING_TEMPLATE: "Server=sqlserver,1433; Database=Fase4TechChallenge; User Id=sa; Password=$(SQL_SERVER_PASSWORD); TrustServerCertificate=True"
+  
