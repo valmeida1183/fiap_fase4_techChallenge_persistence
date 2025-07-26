@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-api
+  namespace: fase4-tech-challenge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client-api
+  template:
+    metadata:
+      labels:
+        app: client-api
+    spec:
+      containers:
+        - name: client-api
+          image: vinicius1183/client-api:v1.0.1
+          ports:  
+            - containerPort: 8082
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: ASPNETCORE_URLS
+              value: "http://+:8082"
+            - name: MassTransit__Host
+              valueFrom:
+                configMapKeyRef:
+                  name: environment-config
+                  key: RABBITMQ_HOST
+            - name: MassTransit__Queue
+              valueFrom:
+                configMapKeyRef:
+                  name: environment-config
+                  key: RABBITMQ_QUEUE_NAME
+            - name: MassTransit__User
+              valueFrom:
+                configMapKeyRef:
+                  name: environment-config
+                  key: RABBITMQ_USER
+            - name: MassTransit__Password
+              valueFrom:
+                configMapKeyRef:
+                  name: environment-config
+                  key: RABBITMQ_PASSWORD
+            - name: PersistanceApiUrls__http
+              valueFrom:
+                configMapKeyRef:
+                  name: environment-config
+                  key: PERSISTENCE_API_URL
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
